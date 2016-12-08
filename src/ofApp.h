@@ -1,26 +1,20 @@
+// ofxFaceTrack2 example: SIMPLE EXAMPLE
+//
+// This example shows minimal usage of the ofxFaceTracker2 addon,
+// doing simple landmark detection and pose estimation
+//
+
 #pragma once
 
 #include "ofMain.h"
-#include "ofxCv.h"
-using namespace ofxCv;
-using namespace cv;
+#include "ofxFaceTracker2.h"
 
-#include "ofxFaceTracker.h"
-
-class ofApp : public ofBaseApp {
+class ofApp : public ofBaseApp{
 public:
-	void setup();
-	void update();
-	void draw();
-	void keyPressed(int key);
-	
-	ofVideoGrabber cam;
-	ofxFaceTracker tracker;
-	ofVec2f position;
-	float scale;
-	ofVec3f orientation;
-	ofMatrix4x4 rotationMatrix;
-	
-	Mat translation, rotation;
-	ofMatrix4x4 pose;
+    void setup();
+    void update();
+    void draw();
+    
+    ofxFaceTracker2 tracker;
+    ofVideoGrabber grabber;
 };

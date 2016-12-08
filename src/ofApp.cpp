@@ -1,55 +1,50 @@
 #include "ofApp.h"
 
-using namespace ofxCv;
+//--------------------------------------------------------------
+void ofApp::setup(){
+    // All examples share data files from example-data, so setting data path to this folder
+    // This is only relevant for the example apps
+    ofSetDataPathRoot(ofFile(__BASE_FILE__).getEnclosingDirectory()+"../../model/");
 
-void ofApp::setup() {
-	ofSetVerticalSync(true);
-	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
-//    cam.listDevices();
-    cam.setVerbose(true);
-    cam.setDesiredFrameRate(60);
-    cam.initGrabber(640, 480);
-
-	tracker.setup();
+    // Setup grabber
+//    ofSetVerticalSync(true);
+//    ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
+//    grabber.setVerbose(true);
+//    grabber.setDesiredFrameRate(60);
+    grabber.setup(480, 360);
+    
+    // Setup tracker
+    tracker.setup();
 }
 
-
-void ofApp::update() {
-	cam.update();
-	if(cam.isFrameNew()) {
-		tracker.update(toCv(cam));
-		position = tracker.getPosition();
-		scale = tracker.getScale();
-		orientation = tracker.getOrientation();
-		rotationMatrix = tracker.getRotationMatrix();
-	}
+//--------------------------------------------------------------
+void ofApp::update(){
+    grabber.update();
+    
+    // Update tracker when there are new frames
+    if(grabber.isFrameNew()){
+        tracker.update(grabber);
+    }
 }
 
-void ofApp::draw() {
-	ofSetColor(255);
-	cam.draw(0, 0);
-	ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
-	
-	if(tracker.getFound()) {
-		ofSetLineWidth(1);
-		tracker.draw();
-		
-		ofSetupScreenOrtho(640, 480, -1000, 1000);
-		ofTranslate(640 / 2, 480 / 2);
-        
-        ofPushMatrix();
-        ofScale(5,5,5);
-        tracker.getObjectMesh().drawWireframe();
-        ofPopMatrix();
-        
-		applyMatrix(rotationMatrix);
-		ofScale(5,5,5);
-		tracker.getObjectMesh().drawWireframe();
-	}
-}
-
-void ofApp::keyPressed(int key) {
-	if(key == 'r') {
-		tracker.reset();
-	}
+//--------------------------------------------------------------
+void ofApp::draw(){
+    // Draw camera image
+    grabber.draw(0, 0);
+    
+    // Draw tracker landmarks
+    tracker.drawDebug();
+    
+    // Draw estimated 3d pose
+    tracker.drawDebugPose();
+    
+    // Draw text UI
+    ofDrawBitmapStringHighlight("Framerate : "+ofToString(ofGetFrameRate()), 10, 20);
+    ofDrawBitmapStringHighlight("Tracker thread framerate : "+ofToString(tracker.getThreadFps()), 10, 40);
+    
+#ifndef __OPTIMIZE__
+    ofSetColor(ofColor::red);
+    ofDrawBitmapString("Warning! Run this app in release mode to get proper performance!",10,60);
+    ofSetColor(ofColor::white);
+#endif
 }
