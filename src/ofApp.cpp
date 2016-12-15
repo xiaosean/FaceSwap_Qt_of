@@ -1,17 +1,28 @@
 #include "ofApp.h"
 
+void ofApp::xiaoDrawPoint(){
+    vector<ofxFaceTracker2Instance> faces = tracker.getInstances();
+    for(auto face :faces){
+        int pointNum = 0;
+//        vector<cv::Point2f> facePoints = face.getLandmarks().getCvImagePoints();
+        ofVec2f point = face.getLandmarks().getImagePoint(0);
+        cout<< "pointNum = "<< pointNum << "point.x = " << point.x << "point.y = " << point.y << std::endl;
+
+    }
+//    int pointCount = 0;
+//    for(cv::Point2f point :facePoints){
+//        cout<< "pointCount = "<< pointCount << "point.x = " << point;
+//    }
+
+}
 //--------------------------------------------------------------
 void ofApp::setup(){
     // All examples share data files from example-data, so setting data path to this folder
     // This is only relevant for the example apps
     ofSetDataPathRoot(ofFile(__BASE_FILE__).getEnclosingDirectory()+"../../model/");
-
+    
     // Setup grabber
-//    ofSetVerticalSync(true);
-//    ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
-//    grabber.setVerbose(true);
-//    grabber.setDesiredFrameRate(60);
-    grabber.setup(480, 360);
+    grabber.setup(1280,720);
     
     // Setup tracker
     tracker.setup();
@@ -31,10 +42,8 @@ void ofApp::update(){
 void ofApp::draw(){
     // Draw camera image
     grabber.draw(0, 0);
-    
     // Draw tracker landmarks
     tracker.drawDebug();
-    
     // Draw estimated 3d pose
     tracker.drawDebugPose();
     
@@ -47,4 +56,6 @@ void ofApp::draw(){
     ofDrawBitmapString("Warning! Run this app in release mode to get proper performance!",10,60);
     ofSetColor(ofColor::white);
 #endif
+    xiaoDrawPoint();
+
 }
