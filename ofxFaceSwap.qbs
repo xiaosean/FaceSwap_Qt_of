@@ -12,7 +12,9 @@ Project{
         name: { return FileInfo.baseName(path) }
 
         files: [
+            "adam.png",
             "dlib-19.2/dlib/all/source.cpp",
+            "man1.jpg",
             "model/shape_predictor_68_face_landmarks.dat",
             'src/main.cpp',
             'src/ofApp.cpp',

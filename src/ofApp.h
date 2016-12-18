@@ -14,7 +14,12 @@ public:
     void setup();
     void update();
     void draw();
-    void xiaoDrawPoint();
+    
     ofxFaceTracker2 tracker;
+    ofxFaceTracker2 faceTracker1;
+    ofxFaceTracker2 faceTracker2;
+
     ofVideoGrabber grabber;
+    ofImage img_1;
+    ofImage img_2;
 };
