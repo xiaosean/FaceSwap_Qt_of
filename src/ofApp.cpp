@@ -1,5 +1,7 @@
 #include "ofApp.h"
 
+
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     // All examples share data files from example-data, so setting data path to this folder
@@ -17,8 +19,8 @@ void ofApp::setup(){
 //    }
     img_1.load(man_path);
     img_2.load(adma_path);
-    img_1.resize(240,320);
-    img_2.resize(240,320);
+    img_1.resize(IMG_WIDTH,IMG_HEIGHT);
+    img_2.resize(IMG_WIDTH,IMG_HEIGHT);
 
     // Setup tracker
 //    tracker.setup();
@@ -40,6 +42,11 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+    // Draw camera image
+    img_1.draw(100, 100);
+    //    img_1.draw(100, 100);
+    img_2.draw(400, 100);
+
     faceTracker1.update(img_1);
     faceTracker2.update(img_2);
 
@@ -60,29 +67,30 @@ void ofApp::draw(){
         ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
         ofVec2f face1_point = faceLm_1.getImagePoint(pointNum);
         cout<< "face1 pointNum = "<< pointNum << "point.x = " << face1_point.x << "point.y = " << face1_point.y << std::endl;
-        img_1.setColor(face1_point.x-1, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x-1, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x-1, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x+1, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x+1, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.setColor(face1_point.x+1, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
-        img_1.update();
+//        img_1.setColor(face1_point.x-1, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x-1, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x-1, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x+1, face1_point.y-1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x+1, face1_point.y, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.setColor(face1_point.x+1, face1_point.y+1, ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+//        img_1.update();
 
+        //show debugs line
+        drawDebug_Triangle_1(getTrianglePointVec(faceLm_1.getCvImagePoints()));
     }
     if(faceTracker2_faces.size() > 0){
         ofxFaceTracker2Landmarks faceLm_2 = faceTracker2_faces.at(0).getLandmarks();
         ofVec2f face2_point = faceLm_2.getImagePoint(pointNum);
         cout<< "face2 pointNum = "<< pointNum << "point.x = " << face2_point.x << "point.y = " << face2_point.y << std::endl;
+        drawDebug_Triangle_2(getTrianglePointVec(faceLm_2.getCvImagePoints()));
 
     }
 
-    // Draw camera image
-    img_1.draw(100, 100);
-    //    img_1.draw(100, 100);
-    img_2.draw(400, 100);
+//    ofDrawLine(10,10,100,100);
+
 //    faceTracker1.draw(100, 100);
 
 
@@ -103,4 +111,50 @@ void ofApp::draw(){
     ofDrawBitmapString("Warning! Run this app in release mode to get proper performance!",10,60);
     ofSetColor(ofColor::white);
 #endif
+}
+void ofApp::drawDebug_Triangle_1(vector<cv::Vec6f>triangleList){
+    for( size_t i = 0; i < triangleList.size(); i++ )
+    {
+        cv::Vec6f t = triangleList[i];
+        cv::Point2f pt1 = cv::Point(cvRound(t[0]), cvRound(t[1]));
+        cv::Point2f pt2 = cv::Point(cvRound(t[2]), cvRound(t[3]));
+        cv::Point2f pt3 = cv::Point(cvRound(t[4]), cvRound(t[5]));
+
+        ofSetColor(255,255,255);
+        if(i == 5 || i == 11 || i == 15)
+            ofSetColor(0, 0, 255);//set te color to blue
+        ofDrawLine(IMG1_WIDTH_EDGE + pt1.x, IMG1_HEIGHT_EDGE + pt1.y,IMG1_WIDTH_EDGE + pt2.x,  IMG1_HEIGHT_EDGE + pt2.y);
+        ofDrawLine(IMG1_WIDTH_EDGE + pt2.x, IMG1_HEIGHT_EDGE + pt2.y,IMG1_WIDTH_EDGE + pt3.x, IMG1_HEIGHT_EDGE + pt3.y);
+        ofDrawLine(IMG1_WIDTH_EDGE + pt3.x, IMG1_HEIGHT_EDGE + pt3.y,IMG1_WIDTH_EDGE + pt1.x, IMG1_HEIGHT_EDGE + pt1.y);
+    }
+}
+void ofApp::drawDebug_Triangle_2(vector<cv::Vec6f>triangleList){
+    for( size_t i = 0; i < triangleList.size(); i++ )
+    {
+        cv::Vec6f t = triangleList[i];
+        cv::Point2f pt1 = cv::Point(cvRound(t[0]), cvRound(t[1]));
+        cv::Point2f pt2 = cv::Point(cvRound(t[2]), cvRound(t[3]));
+        cv::Point2f pt3 = cv::Point(cvRound(t[4]), cvRound(t[5]));
+
+        ofSetColor(255,255,255);
+        if(i == 5 || i == 11 || i == 15)
+            ofSetColor(0, 0, 255);//set te color to blue
+        ofDrawLine(IMG2_WIDTH_EDGE + pt1.x, IMG2_HEIGHT_EDGE + pt1.y,IMG2_WIDTH_EDGE + pt2.x,  IMG2_HEIGHT_EDGE + pt2.y);
+        ofDrawLine(IMG2_WIDTH_EDGE + pt2.x, IMG2_HEIGHT_EDGE + pt2.y,IMG2_WIDTH_EDGE + pt3.x, IMG2_HEIGHT_EDGE + pt3.y);
+        ofDrawLine(IMG2_WIDTH_EDGE + pt3.x, IMG2_HEIGHT_EDGE + pt3.y,IMG2_WIDTH_EDGE + pt1.x, IMG2_HEIGHT_EDGE + pt1.y);
+    }
+}
+template <class T>
+vector<cv::Vec6f> ofApp::getTrianglePointVec(vector<T> points) const {
+    cv::Rect rect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    cv::Subdiv2D subdiv(rect);
+
+    for(int i=0;i<points.size();i++){
+        if( rect.contains(points[i]) ){
+            subdiv.insert(points[i]);
+        }
+    }
+    vector<cv::Vec6f> triangleList;
+    subdiv.getTriangleList(triangleList);
+    return(triangleList);
 }
