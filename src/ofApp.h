@@ -6,9 +6,12 @@
 
 #pragma once
 
-#include "ofxFaceTracker2.h"
+//#include "ofxFaceTracker2.h"
+#include "faceswap.h"
+
 using namespace ofxCv;
 using namespace cv;
+using namespace std;
 
 
 class ofApp : public ofBaseApp{
@@ -16,13 +19,13 @@ public:
     void setup();
     void update();
     void draw();
-    void drawDebug_Triangle_1(vector<cv::Vec6f>triangleList);
-    void drawDebug_Triangle_2(vector<cv::Vec6f>triangleList);
-    void applyAffineTransform(Mat &warpImage, Mat &src, vector<Point2f> &srcTri, vector<Point2f> &dstTri);
-    void morphTriangle(Mat &img1, Mat &img2, Mat &img, vector<Point2f> &t1, vector<Point2f> &t2, vector<Point2f> &t, double alpha);
+    void drawDebug_Triangle_1(std::vector<cv::Vec6f>triangleList);
+    void drawDebug_Triangle_2(std::vector<cv::Vec6f>triangleList);
+    void applyAffineTransform(Mat &warpImage, Mat &src, std::vector<Point2f> &srcTri, std::vector<Point2f> &dstTri);
+    void morphTriangle(Mat &img1, Mat &img2, Mat &img, std::vector<Point2f> &t1, std::vector<Point2f> &t2, std::vector<Point2f> &t, double alpha);
 
     template <class T>
-    vector<cv::Vec6f>getTrianglePointVec(vector<T>points) const;
+    std::vector<cv::Vec6f>getTrianglePointVec(std::vector<T>points) const;
 
     ofxFaceTracker2 tracker;
     ofxFaceTracker2 faceTracker1;
@@ -42,5 +45,6 @@ private:
     int IMG_WIDTH = 240;
     int IMG_HEIGHT = 320;
     double alpha = 0.5;
-    vector<int> triVector;
+    faceswap fs;
+//    vector<int> triVector;
 };

@@ -16,6 +16,8 @@ Project{
             "dlib-19.2/dlib/all/source.cpp",
             "man1.jpg",
             "model/shape_predictor_68_face_landmarks.dat",
+            "src/faceswap.cpp",
+            "src/faceswap.h",
             'src/main.cpp',
             'src/ofApp.cpp',
             'src/ofApp.h',
