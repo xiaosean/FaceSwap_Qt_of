@@ -46,5 +46,6 @@ private:
     int IMG_HEIGHT = 320;
     double alpha = 0.5;
     faceswap fs;
+    int _count = 0;
 //    vector<int> triVector;
 };

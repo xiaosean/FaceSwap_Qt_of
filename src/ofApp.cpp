@@ -36,7 +36,7 @@ void ofApp::setup(){
 //    tracker.setup();
     //alpha controls the degree of morph
     //Read input images
-//    img1 = toCv(img_1);
+    img1 = toCv(img_1.getPixelsRef());
     img2 = toCv(img_2.getPixelsRef());
     //convert Mat to float data type
 //    img1.convertTo(img1, CV_32F);
@@ -46,7 +46,7 @@ void ofApp::setup(){
 //    waitKey(0);
 //    destroyAllWindows();
     imgMorph = Mat::zeros(img1.size(), CV_32FC3);
-    faceswap fs(img2);
+//    faceswap fs(img2);
 
 
 
@@ -62,21 +62,25 @@ void ofApp::update(){
         cout<< "grabber update" << std::endl;
 
 //        tracker.update(grabber);
-//        faceTracker1.update(img_1);
-        faceTracker1.update(grabber);
-        faceTracker2.update(img_1);
+        faceTracker1.update(img_1);
+//        faceTracker1.update(grabber);
+        faceTracker2.update(img_2);
     }
+    faceTracker1.update(img_1);
+    faceTracker2.update(img_2);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    std::cout<< "draw" << std::endl;
+    _count++;
+
+    std::cout<< "draw  = " << _count << std::endl;
 
 
     // Draw camera image
-    grabber.draw(0, 0);
-//        img_1.draw(100, 100);
+//    grabber.draw(0, 0);
+    img_1.draw(0, 0);
     img_2.draw(600, 100);
 
 
@@ -98,18 +102,24 @@ void ofApp::draw(){
         ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
         std::cout << "start swap"<<endl;
         Mat grabberMat = toCv(grabber.getPixelsRef());
-        Mat output = fs.swap(faceTracker1, faceTracker2, grabberMat);
+//        Mat output = fs.swap(faceTracker1, faceTracker2, grabberMat, img2);
+        Mat output = fs.swap(faceTracker1, faceTracker2, img1, img2);
+        std::cout<<"output col" << output.cols << std::endl;
+
 //        output.
-        ofImage swapImage;
+        ofFloatImage  swapImage;
+//        imshow("Morphed Face", output);
+//        waitKey(0);
+
         toOf(output, swapImage);
         swapImage.draw(900,100);
         std::cout<<"draw swapImage" << std::endl;
 
-        imshow("Face Swapped", output);
-        std::cout<<"draw Face" << std::endl;
+//        imshow("Face Swapped", output);
+//        std::cout<<"draw Face" << std::endl;
 
-        waitKey(0);
-        destroyAllWindows();
+//        waitKey(0);
+//        destroyAllWindows();
 
 
 

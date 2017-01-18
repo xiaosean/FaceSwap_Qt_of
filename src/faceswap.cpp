@@ -2,148 +2,45 @@
 using namespace std;
 faceswap::faceswap(){
 }
-faceswap::faceswap(Mat swapModel){
-//    img1 = src;
-    img2 = swapModel;
-
-    //alpha controls the degree of morph
-//    double alpha = 0.5;
-
-    //Read input images
-//    std::cout << img1.cols << std::endl;
-//    std::cout << img2.cols << std::endl;
-    //convert Mat to float data type
-//    img1.convertTo(img1, CV_32F);
-//    img2.convertTo(img2, CV_32F);
-
-
-    //empty average image
-//    cv_image<bgr_pixel> c_src(img1);
-//    std::vector<rectangle> face;
-//    face = detector(c_src);
-    faceTracker1.setup();
-    faceTracker2.setup();
-}
-
-Mat faceswap::swap(Mat src){
+Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel){
    std::cout<<"debug setep in faceswap3" << std::endl;
     // string filename1 = "/home/spark/Desktop/learnopencv/FaceMorph/hillary_clinton.jpg";
     // string filename2 ="/home/spark/Desktop/learnopencv/FaceMorph/ted_cruz.jpg";
-
-    //alpha controls the degree of morph
-    double alpha = 0.5;
-
-    //Read input images
-    // Mat img1 = imread(filename1);
-    // Mat img2 = imread(filename2);
-    // std::cout << img1.cols << std::endl;
-    // std::cout << img2.cols << std::endl;
-    //convert Mat to float data type
-    img2 = src;
-    img1.convertTo(img1, CV_32F);
-    img2.convertTo(img2, CV_32F);
-
-
-    //empty average image
-    Mat imgMorph = Mat::zeros(img1.size(), CV_32FC3);
-
-    std::cout<<"debug setep in faceswap3.1" << std::endl;
-    //Read points
-    // vector<Point2f> src_points = readPoints( filename1 + ".txt");
-    // vector<Point2f> dest_points = readPoints( filename2 + ".txt");
-    faceTracker1.update(img1);
-    faceTracker1.update(img1);
-    std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
-    ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
-    std::vector<cv::Point2f> src_points = faceLm_1.getCvImagePoints();
-    std::cout<<"debug setep in faceswap3.2" << std::endl;
- // vector<Point2f> dest_points = readPoints( filename2 + ".txt");
-    faceTracker2.update(img2);
-    std::vector<ofxFaceTracker2Instance> faceTracker2_faces = faceTracker2.getInstances();
-    ofxFaceTracker2Landmarks faceLm_2 = faceTracker2_faces.at(0).getLandmarks();
-    std::vector<cv::Point2f> dest_points = faceLm_2.getCvImagePoints();
-    std::cout<<"debug setep in faceswap3.3" << std::endl;
-
-    std::vector<Point2f> out_points;
-
-    //compute weighted average point coordinates
-    for(int i = 0; i < src_points.size(); i++)
-    {
-        float x, y;
-        x = (1 - alpha) * src_points[i].x + alpha * dest_points[i].x;
-        y =  ( 1 - alpha ) * src_points[i].y + alpha * dest_points[i].y;
-
-        out_points.push_back(Point2f(x,y));
-
-    }
-
-
-    // //Read triangle indices
-    // ifstream ifs("/home/spark/Desktop/learnopencv/FaceMorph/tri.txt");
-    // int x,y,z;
-
-    // while(ifs >> x >> y >> z)
-    // {
-    std::vector<int> v;
-    int x,y,z;
-    for(int i = 0; i < triVec.size(); ++i){
-         v = triVec.at(i);
-         x = v.at(0);
-         y = v.at(1);
-         z = v.at(2);
-        // Triangles
-        std::vector<Point2f> t1, t2, t;
-
-        // Triangle corners for image 1.
-        t1.push_back( src_points[x] );
-        t1.push_back( src_points[y] );
-        t1.push_back( src_points[z] );
-
-        // Triangle corners for image 2.
-        t2.push_back( dest_points[x] );
-        t2.push_back( dest_points[y] );
-        t2.push_back( dest_points[z] );
-
-        // Triangle corners for morphed image.
-        t.push_back( out_points[x] );
-        t.push_back( out_points[y] );
-        t.push_back( out_points[z] );
-        morphTriangle(img1, img2, imgMorph, t1, t2, t, alpha);
-    }
-
-    // Display Result
-//    imshow("Morphed Face", imgMorph / 255.0);
-//    waitKey(0);
-
-    return imgMorph;
-
-}
-Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src){
-   std::cout<<"debug setep in faceswap3" << std::endl;
-    // string filename1 = "/home/spark/Desktop/learnopencv/FaceMorph/hillary_clinton.jpg";
-    // string filename2 ="/home/spark/Desktop/learnopencv/FaceMorph/ted_cruz.jpg";
-
+   faceTracker1.setup();
+   faceTracker2.setup();
     //alpha controls the degree of morph
     double alpha = 0.5;
     //convert Mat to float data type
     img1 = src;
+    img2 = swapModel;
+    std::cout << "img1 col = " << img1.cols << std::endl;
+    std::cout << "img2 col = "<< img2.cols << std::endl;
 
     img1.convertTo(img1, CV_32F);
     img2.convertTo(img2, CV_32F);
-//    img2.resize(img1.cols, img1.rows);
+    img2.resize(img1.rows, img1.cols);
 //    // Display Result
 //    imshow("img1 Face", img1 / 255.0);
 //    waitKey(0);
 //    // Display Result
+    std::cout<< img1.cols << std::endl;
+
     std::cout<<"debug setep in faceswap3..." << std::endl;
     std::cout<< img2.cols << std::endl;
-    imshow("img2 Face", img2);
-    waitKey(0);
-    destroyAllWindows();
+//    imshow("img2 Face", img2/255);
+//    waitKey(0);
+//    destroyAllWindows();
 
     //empty average image
-    Mat imgMorph = Mat::zeros(img1.size(), CV_32FC3);
+     Mat imgMorph;
+//     img1.convertTo(imgMorph, CV_32FC3);
+     imgMorph = img1.clone();
+//     imshow("Morphed temp Face", imgMorph/255);
+//     waitKey(0);
+//     destroyAllWindows();
 
+//    Mat imgMorph = Mat::zeros(img1.size(), CV_32FC3);
+//    Mat imgMorph = img1.clone();
     std::cout<<"debug setep in faceswap3.1" << std::endl;
     //Read points
     // vector<Point2f> src_points = readPoints( filename1 + ".txt");
@@ -181,8 +78,12 @@ Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2,
 
     // while(ifs >> x >> y >> z)
     // {
+    if(triVec.size() == 0)
+        loadTriangleList();    //empty average image
+
     std::vector<int> v;
     int x,y,z;
+    std::cout<< "triVec size() = "<< triVec.size() << std::endl;
     for(int i = 0; i < triVec.size(); ++i){
          v = triVec.at(i);
          x = v.at(0);
@@ -207,22 +108,22 @@ Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2,
         t.push_back( out_points[z] );
         morphTriangle(img1, img2, imgMorph, t1, t2, t, alpha);
     }
-
-    // Display Result
-    imshow("Morphed Face", imgMorph / 255.0);
+//    imgMorph.convertTo(imgMorph, CV_8U);
+//    // Display Result
+    imshow("Morphed Face", imgMorph/255);
     waitKey(0);
     destroyAllWindows();
 
     std::cout<<"return imgMorph;" << std::endl;
 
-    return imgMorph;
+    return imgMorph/255.0;
 
 }
 void faceswap::loadTriangleList(){
     //Read triangle indices
     ifstream ifs("/home/spark/Desktop/learnopencv/FaceMorph/tri.txt");
     int x,y,z;
-    int upperBound = 67;
+    int upperBound = 68;
     std::vector<int> v(3, 0);
      while(ifs >> x >> y >> z)
     {

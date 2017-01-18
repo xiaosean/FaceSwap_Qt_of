@@ -39,12 +39,13 @@ class faceswap{
 
 public:
     faceswap();
-    faceswap(Mat swapModel);
-    faceswap(Mat getImg1, Mat getImg2);
+//    faceswap(Mat swapModel);
+//    faceswap(Mat getImg1, Mat getImg2);
     ~faceswap();
 //    Mat getMorphFace();
-    Mat swap(Mat src);
-    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src);
+//    Mat swap(Mat src);
+//    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src);
+    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
 
 //    Mat swap(Mat src, Mat swapModel);
     ofxFaceTracker2 faceTracker1;
