@@ -12,7 +12,7 @@ void ofApp::setup(){
 //    ofLoadImage(img_2, "/home/spark/Desktop/FaceSwap_Qt_of/adam.png");
     std::string adma_path = "/home/spark/Desktop/FaceSwap_Qt_of/adam.png";
     std::string man_path = "/home/spark/Desktop/FaceSwap_Qt_of/man1.jpg";
-
+    std::string girl_path = "/home/spark/Desktop/face_Detect/girl2.jpg";
 //    if(!img_1.load(filename)) {
 //        display_file_path(filename);
 //    }
@@ -26,6 +26,7 @@ void ofApp::setup(){
 
 //    }
     img_1.load(man_path);
+//    img_1.load(girl_path);
     img_2.load(adma_path);
     img_1.resize(IMG_WIDTH,IMG_HEIGHT);
     img_2.resize(IMG_WIDTH,IMG_HEIGHT);
@@ -81,7 +82,7 @@ void ofApp::draw(){
     // Draw camera image
 //    grabber.draw(0, 0);
     img_1.draw(0, 0);
-    img_2.draw(600, 100);
+    img_2.draw(600, 0);
 
 
 

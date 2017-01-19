@@ -9,14 +9,13 @@
 #include "ofxFaceTracker2.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <stdlib.h>
 #include "ofxCv.h"
 //#include <dlib/opencv.h>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
 //#include <dlib/image_processing/frontal_face_detector.h>
 //#include <dlib/image_processing/render_face_detections.h>
 //#include <dlib/image_processing.h>
@@ -46,6 +45,8 @@ public:
 //    Mat swap(Mat src);
 //    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src);
     Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
+    Mat convexSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
+    Mat morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
 
 //    Mat swap(Mat src, Mat swapModel);
     ofxFaceTracker2 faceTracker1;
