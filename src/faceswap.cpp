@@ -110,7 +110,11 @@ Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2,
     }
 //    imgMorph.convertTo(imgMorph, CV_8U);
 //    // Display Result
-    imshow("Morphed Face", imgMorph/255);
+//    imgMorph.convertTo(imgMorph, CV_32F);
+    Mat bgrImgMorph;
+    cvtColor( imgMorph,bgrImgMorph, CV_RGB2BGR);
+
+    imshow("Morphed Face", bgrImgMorph/255);
     waitKey(0);
     destroyAllWindows();
 
