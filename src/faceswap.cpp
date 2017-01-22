@@ -1,8 +1,18 @@
 #include "faceswap.h"
 using namespace std;
-faceswap::faceswap(){
-
-
+faceswap::faceswap(){    
+    faceTracker1.setup();
+    faceTracker2.setup();
+//    if(triVec.size() == 0)
+    loadTriangleList();    //empty average image
+}
+Mat faceswap::swap(Mat src, Mat iminateModel){
+    img1 = src;
+    img2 = iminateModel;
+    faceTracker1.update(img1);
+    faceTracker2.update(img2);
+//    img2.resize(img1.rows, img1.cols);
+    return(convexSwap(src, iminateModel));
 }
 Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel){
 
@@ -15,6 +25,56 @@ Mat faceswap::swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2,
     else{
         return(convexSwap(faceTracker1, faceTracker2, src, swapModel));
     }
+
+}
+Mat faceswap::convexSwap(Mat src, Mat swapModel){
+
+    img1.convertTo(img1, CV_32F);
+    img2.convertTo(img2, CV_32F);
+    Mat imgMorph = img1;
+    Mat srcM = cv::Mat::zeros(img1.size(), CV_8UC1);
+
+    std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
+    if(faceTracker1_faces.size() == 0)
+        return imgMorph/255;
+    ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
+    std::vector<cv::Point2f> src_points = faceLm_1.getCvImagePoints();
+    std::vector<ofxFaceTracker2Instance> faceTracker2_faces = faceTracker2.getInstances();
+    if(faceTracker2_faces.size() == 0)
+        return imgMorph/255;
+    ofxFaceTracker2Landmarks faceLm_2 = faceTracker2_faces.at(0).getLandmarks();
+    std::vector<cv::Point2f> dest_points = faceLm_2.getCvImagePoints();
+    std::vector<cv::Point> src_points2d;
+    std::vector<int> v;
+    int x,y,z;
+
+    for(int i = 0; i < triVec.size(); ++i){
+         v = triVec.at(i);
+         x = v.at(0);
+         y = v.at(1);
+         z = v.at(2);
+        // Triangles
+        std::vector<Point2f> srcTri, dstTri;
+        // Triangle corners for image 2.
+        srcTri.push_back( dest_points[x] );
+        srcTri.push_back( dest_points[y] );
+        srcTri.push_back( dest_points[z] );
+        // Triangle corners for image 1.
+        dstTri.push_back( src_points[x] );
+        dstTri.push_back( src_points[y] );
+        dstTri.push_back( src_points[z] );
+        std::vector<cv::Point> points;
+        points.push_back(Point( src_points[x].x, src_points[x].y));
+        points.push_back(Point(src_points[y].x, src_points[y].y));
+        points.push_back(Point(src_points[z].x, src_points[z].y));
+        cv::Mat warp_mat = cv::getAffineTransform(srcTri, dstTri);
+        cv::warpAffine(img2, srcM, warp_mat, srcM.size());
+        cv::Mat mask = cv::Mat::zeros(imgMorph.size(), CV_8U);
+        cv::fillConvexPoly(mask, points, cvScalar(255));
+        srcM.copyTo(imgMorph, mask);
+    }
+    return imgMorph/255.0;
+
 
 }
 Mat faceswap::convexSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel){

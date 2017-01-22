@@ -28,8 +28,8 @@ public:
     std::vector<cv::Vec6f>getTrianglePointVec(std::vector<T>points) const;
 
     ofxFaceTracker2 tracker;
-    ofxFaceTracker2 faceTracker1;
-    ofxFaceTracker2 faceTracker2;
+//    ofxFaceTracker2 faceTracker1;
+//    ofxFaceTracker2 faceTracker2;
 
     ofVideoGrabber grabber;
     ofImage img_1;
@@ -37,14 +37,16 @@ public:
     Mat img1;
     Mat img2;
     Mat imgMorph;
+    ofFloatImage  swapImage;
+
 private:
-    int IMG1_WIDTH_EDGE = 100;
-    int IMG1_HEIGHT_EDGE = 100;
-    int IMG2_WIDTH_EDGE = 400;
-    int IMG2_HEIGHT_EDGE = 100;
-    int IMG_WIDTH = 240;
-    int IMG_HEIGHT = 320;
-    double alpha = 0.5;
+//    int IMG1_WIDTH_EDGE = 100;
+//    int IMG1_HEIGHT_EDGE = 100;
+//    int IMG2_WIDTH_EDGE = 400;
+//    int IMG2_HEIGHT_EDGE = 100;
+    int IMG_WIDTH = 300;
+    int IMG_HEIGHT = 280;
+//    double alpha = 0.5;
     faceswap fs;
     int _count = 0;
 //    vector<int> triVector;

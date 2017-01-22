@@ -44,7 +44,9 @@ public:
 //    Mat getMorphFace();
 //    Mat swap(Mat src);
 //    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src);
+    Mat swap(Mat src, Mat iminateModel);
     Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
+    Mat convexSwap(Mat src, Mat swapModel);
     Mat convexSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
     Mat morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
 
@@ -55,7 +57,6 @@ public:
     ofImage img_2;
     Mat img1;
     Mat img2;
-    Mat imgMorph;
 private:
     int IMG1_WIDTH_EDGE = 100;
     int IMG1_HEIGHT_EDGE = 100;
