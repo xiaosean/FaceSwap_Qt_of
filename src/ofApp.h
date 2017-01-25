@@ -27,7 +27,7 @@ public:
     template <class T>
     std::vector<cv::Vec6f>getTrianglePointVec(std::vector<T>points) const;
 
-    ofxFaceTracker2 tracker;
+//    ofxFaceTracker2 tracker;
 //    ofxFaceTracker2 faceTracker1;
 //    ofxFaceTracker2 faceTracker2;
 
@@ -45,7 +45,7 @@ private:
 //    int IMG2_WIDTH_EDGE = 400;
 //    int IMG2_HEIGHT_EDGE = 100;
     int IMG_WIDTH = 300;
-    int IMG_HEIGHT = 280;
+    int IMG_HEIGHT = 260;
 //    double alpha = 0.5;
     faceswap fs;
     int _count = 0;

@@ -12,7 +12,9 @@ void ofApp::setup(){
     ofSetDataPathRoot(ofFile(__BASE_FILE__).getEnclosingDirectory()+"../../model/");
     // Setup grabber
     grabber.setup(IMG_WIDTH,IMG_HEIGHT);
+    grabber.setDesiredFrameRate(30);
 //    ofLoadImage(img_1, "./man1.png");
+
 //    ofLoadImage(img_2, "/home/spark/Desktop/FaceSwap_Qt_of/adam.png");
     std::string adma_path = "/home/spark/Desktop/FaceSwap_Qt_of/adam.png";
 //    std::string adma_path = "/home/spark/Desktop/face_Detect/adam5.jpg";
@@ -36,7 +38,7 @@ void ofApp::setup(){
 
 //    fs();
 //    faceswap fs(img2);
-
+//    fs.setIminateLandmarks(img2);
 
 
 
@@ -47,7 +49,8 @@ void ofApp::update(){
     grabber.update();
     if(grabber.isFrameNew()){
         toOf(fs.swap(toCv(grabber.getPixelsRef()), img2), swapImage);
-        tracker.update(grabber);
+//        toOf(fs.swap(toCv(grabber.getPixelsRef())), swapImage);
+//        tracker.update(grabber);
 
     }
 //     Update tracker when there are new frames

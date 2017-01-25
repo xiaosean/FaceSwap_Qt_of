@@ -38,17 +38,18 @@ class faceswap{
 
 public:
     faceswap();
-//    faceswap(Mat swapModel);
+    faceswap(Mat iminateModel);
 //    faceswap(Mat getImg1, Mat getImg2);
     ~faceswap();
 //    Mat getMorphFace();
 //    Mat swap(Mat src);
 //    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src);
+    Mat swap(Mat src);
     Mat swap(Mat src, Mat iminateModel);
-    Mat swap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
+    Mat convexSwap(Mat src);
     Mat convexSwap(Mat src, Mat swapModel);
-    Mat convexSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
     Mat morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
+    void setIminateLandmarks(Mat iminateModel);
 
 //    Mat swap(Mat src, Mat swapModel);
     ofxFaceTracker2 faceTracker1;
@@ -70,7 +71,7 @@ private:
     std::vector<std::vector<int>> triVec;
     std::vector<cv::Point2f> EXpoints;
     std::vector<Point2f> readPoints(string pointsFileName);
-
+    std::vector<cv::Point2f> dest_points ;
     void morphTriangle(Mat &img1, Mat &img2, Mat &img, std::vector<Point2f> &t1, std::vector<Point2f> &t2, std::vector<Point2f> &t, double alpha);
     void applyAffineTransform(Mat &warpImage, Mat &src, std::vector<Point2f> &srcTri, std::vector<Point2f> &dstTri);
     void loadTriangleList();
