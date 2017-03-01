@@ -23,13 +23,8 @@ public:
     void drawDebug_Triangle_2(std::vector<cv::Vec6f>triangleList);
     void applyAffineTransform(Mat &warpImage, Mat &src, std::vector<Point2f> &srcTri, std::vector<Point2f> &dstTri);
     void morphTriangle(Mat &img1, Mat &img2, Mat &img, std::vector<Point2f> &t1, std::vector<Point2f> &t2, std::vector<Point2f> &t, double alpha);
-
     template <class T>
     std::vector<cv::Vec6f>getTrianglePointVec(std::vector<T>points) const;
-
-//    ofxFaceTracker2 tracker;
-//    ofxFaceTracker2 faceTracker1;
-//    ofxFaceTracker2 faceTracker2;
 
     ofVideoGrabber grabber;
     ofImage img_1;
@@ -40,14 +35,10 @@ public:
     ofFloatImage  swapImage;
 
 private:
-//    int IMG1_WIDTH_EDGE = 100;
-//    int IMG1_HEIGHT_EDGE = 100;
-//    int IMG2_WIDTH_EDGE = 400;
-//    int IMG2_HEIGHT_EDGE = 100;
     int IMG_WIDTH = 300;
     int IMG_HEIGHT = 260;
-//    double alpha = 0.5;
     faceswap fs;
     int _count = 0;
-//    vector<int> triVector;
+   //use skip frame to speed up frame
+    int _skipFrame = 3;
 };

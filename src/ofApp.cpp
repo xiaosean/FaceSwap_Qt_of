@@ -13,33 +13,12 @@ void ofApp::setup(){
     // Setup grabber
     grabber.setup(IMG_WIDTH,IMG_HEIGHT);
     grabber.setDesiredFrameRate(30);
-//    ofLoadImage(img_1, "./man1.png");
-
-//    ofLoadImage(img_2, "/home/spark/Desktop/FaceSwap_Qt_of/adam.png");
     std::string adma_path = "/home/spark/Desktop/FaceSwap_Qt_of/adam.png";
-//    std::string adma_path = "/home/spark/Desktop/face_Detect/adam5.jpg";
-
     std::string man_path = "/home/spark/Desktop/FaceSwap_Qt_of/man1.jpg";
     std::string girl_path = "/home/spark/Desktop/face_Detect/girl2.jpg";
-//    img_1.load(man_path);
-//    img_1.load(girl_path);
     img_2.load(adma_path);
-//    img_1.resize(IMG_WIDTH,IMG_HEIGHT);
     img_2.resize(IMG_WIDTH,IMG_HEIGHT);
-
-    // Setup tracker
-//    faceTracker1.setup();
-//    faceTracker2.setup();
-//    tracker.setup();
-    //alpha controls the degree of morph
-    //Read input images
-//    img1 = toCv(img_1.getPixelsRef());
     img2 = toCv(img_2.getPixelsRef());
-
-//    fs();
-//    faceswap fs(img2);
-//    fs.setIminateLandmarks(img2);
-
 
 
 }
@@ -47,33 +26,13 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     grabber.update();
-    if(grabber.isFrameNew()){
+    if(grabber.isFrameNew())
         toOf(fs.swap(toCv(grabber.getPixelsRef()), img2), swapImage);
-//        toOf(fs.swap(toCv(grabber.getPixelsRef())), swapImage);
-//        tracker.update(grabber);
-
-    }
-//     Update tracker when there are new frames
-//    if(grabber.isFrameNew()){
-//        cout<< "grabber update" << std::endl;
-
-//        tracker.update(grabber);
-//        faceTracker1.update(img_1);
-//        faceTracker1.update(grabber);
-//        faceTracker2.update(img_2);
-//    }
-//    faceTracker1.update(img_1);
-//    faceTracker2.update(img_2);
-
-
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     _count++;
-
-    std::cout<< "draw  = " << _count << std::endl;
-
 
     // Draw camera image
     grabber.draw(0, 0);
@@ -85,7 +44,6 @@ void ofApp::draw(){
      // https://www.google.com.tw/search?q=DLIB+LANDMARKS&espv=2&biw=998&bih=356&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjslqihp_7QAhXJNJQKHblWB84Q_AUIBigB#imgrc=XfSi6XDndzX5zM%3A
     swapImage.setImageType(OF_IMAGE_COLOR);
     swapImage.draw(600,0);
-
 
 }
 
