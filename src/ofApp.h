@@ -37,6 +37,9 @@ public:
 private:
     int IMG_WIDTH = 300;
     int IMG_HEIGHT = 260;
+//    int IMG_WIDTH = 800;
+//    int IMG_HEIGHT = 640;
+
     faceswap fs;
     int _count = 0;
    //use skip frame to speed up frame

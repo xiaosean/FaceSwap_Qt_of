@@ -39,11 +39,12 @@ void ofApp::draw(){
 //    tracker.drawDebug();
 
 //    img_1.draw(0, 0);
-    img_2.draw(300, 0);
+    img_2.draw(0, 300);
     // 0~67 points can see the point
      // https://www.google.com.tw/search?q=DLIB+LANDMARKS&espv=2&biw=998&bih=356&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjslqihp_7QAhXJNJQKHblWB84Q_AUIBigB#imgrc=XfSi6XDndzX5zM%3A
     swapImage.setImageType(OF_IMAGE_COLOR);
-    swapImage.draw(600,0);
+    swapImage.resize(600,430);
+    swapImage.draw(350,0);
 
 }
 

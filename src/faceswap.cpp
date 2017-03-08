@@ -3,16 +3,17 @@ using namespace std;
 faceswap::faceswap(){    
     faceTracker1.setup();
     faceTracker2.setup();
-//    if(triVec.size() == 0)
     loadTriangleList();    //empty average image
 }
+//void faceswap::setSize(int Width, int Height){
+
+//}
 void faceswap::setIminateLandmarks(Mat iminateModel){
     faceTracker1.update(iminateModel);
     std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
     if(faceTracker1_faces.size() > 0){
         ofxFaceTracker2Landmarks faceLm_2 = faceTracker1_faces.at(0).getLandmarks();
         dest_points = faceLm_2.getCvImagePoints();
-        std::cout << "dest_points" << dest_points.size() << std::endl;
     }
 }
 Mat faceswap::swap(Mat src){
@@ -35,11 +36,17 @@ Mat faceswap::convexSwap(Mat src){
 
     img1.convertTo(img1, CV_32F);
     Mat imgMorph = img1;
-    Mat srcM = cv::Mat::zeros(img1.size(), CV_8UC1);
-
+    Mat faceSrc = cv::Mat::zeros(img1.size(), CV_32F);
+    Mat faceDest = cv::Mat::zeros(img1.size(), CV_32F);
+    Mat faceBlending = cv::Mat::zeros(img1.size(), CV_32F);
+    Mat srcM = cv::Mat::zeros(img1.size(), CV_32F);
+    Mat oriM = cv::Mat::zeros(img1.size(), CV_32F);
     std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
     if(faceTracker1_faces.size() == 0)
-        return imgMorph/255;
+        if(lastMorph.rows > 0)
+            return lastMorph/255;
+        else
+            return imgMorph/255;
     ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
     std::vector<cv::Point2f> src_points = faceLm_1.getCvImagePoints();
     std::vector<int> v;
@@ -60,19 +67,47 @@ Mat faceswap::convexSwap(Mat src){
         dstTri.push_back( src_points[x] );
         dstTri.push_back( src_points[y] );
         dstTri.push_back( src_points[z] );
-        std::vector<cv::Point> points;
-        points.push_back(Point( src_points[x].x, src_points[x].y));
-        points.push_back(Point(src_points[y].x, src_points[y].y));
-        points.push_back(Point(src_points[z].x, src_points[z].y));
-        cv::Mat warp_mat = cv::getAffineTransform(srcTri, dstTri);
-        cv::warpAffine(img2, srcM, warp_mat, srcM.size());
+        std::vector<cv::Point> tri_points;
+        tri_points.push_back(Point( src_points[x].x, src_points[x].y));
+        tri_points.push_back(Point(src_points[y].x, src_points[y].y));
+        tri_points.push_back(Point(src_points[z].x, src_points[z].y));
+        cv::Mat destWarpMat = cv::getAffineTransform(srcTri, dstTri);
+//        cv::Mat srcWarpMat = cv::getAffineTransform(srcTri, srcTri);
+        cv::warpAffine(img2, srcM, destWarpMat, srcM.size());
+//        cv::warpAffine(img1, oriM, srcWarpMat, oriM.size());
         cv::Mat mask = cv::Mat::zeros(imgMorph.size(), CV_8U);
-        cv::fillConvexPoly(mask, points, cvScalar(255));
-        srcM.copyTo(imgMorph, mask);
+        cv::fillConvexPoly(mask, tri_points, cvScalar(255));
+        srcM.copyTo(faceSrc, mask);
+        img1.copyTo(faceDest, mask);
+
+//        cv::fillConvexPoly(mask, tri_points, cvScalar(255));
+
+//        srcM.copyTo(imgMorph, mask);
+
+//        oriM.copyTo(faceSrc, mask);
+
+//        faceBlending.copyTo(imgMorph, mask);
+
+//        srcM.copyTo(imgMorph, mask);
+
+
     }
+    double alpha = .4f;
+    double beta = ( 1.0 - alpha );
+    addWeighted( faceSrc, alpha, faceDest, beta, 0, faceBlending);
+    cv::Mat mask = cv::Mat::zeros(imgMorph.size(), CV_8U);
+    std::vector<Point> points2D;
+    for(int i = 0; i < 17; ++i){
+         points2D.push_back(Point(src_points[i].x, src_points[i].y));
+    }
+    for(int i = 27-1; i > 16; --i){
+         points2D.push_back(Point(src_points[i].x, src_points[i].y));
+    }
+    cv::fillConvexPoly(mask, points2D, cvScalar(255));
+    faceBlending.copyTo(imgMorph, mask);
+//    imgMorph = faceBlending;
+    lastMorph = imgMorph;
     return imgMorph/255.0;
-
-
 }
 Mat faceswap::convexSwap(Mat src, Mat swapModel){
 
@@ -136,24 +171,10 @@ Mat faceswap::morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTrac
 
     //empty average image
      Mat imgMorph;
-//     img1.convertTo(imgMorph, CV_32FC3);
      imgMorph = img1.clone();
-//     imshow("Morphed temp Face", imgMorph/255);
-//     waitKey(0);
-//     destroyAllWindows();
-
-//    Mat imgMorph = Mat::zeros(img1.size(), CV_32FC3);
-//    Mat imgMorph = img1.clone();
-    //Read points
-    // vector<Point2f> src_points = readPoints( filename1 + ".txt");
-    // vector<Point2f> dest_points = readPoints( filename2 + ".txt");
-//    faceTracker1.update(img1);
-//    faceTracker1.update(img1);
     std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
     ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
     std::vector<cv::Point2f> src_points = faceLm_1.getCvImagePoints();
- // vector<Point2f> dest_points = readPoints( filename2 + ".txt");
-//    faceTracker2.update(img2);
     std::vector<ofxFaceTracker2Instance> faceTracker2_faces = faceTracker2.getInstances();
     ofxFaceTracker2Landmarks faceLm_2 = faceTracker2_faces.at(0).getLandmarks();
     std::vector<cv::Point2f> dest_points = faceLm_2.getCvImagePoints();
@@ -165,19 +186,10 @@ Mat faceswap::morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTrac
         float x, y;
         x = (1 - alpha) * src_points[i].x + alpha * dest_points[i].x;
         y =  ( 1 - alpha ) * src_points[i].y + alpha * dest_points[i].y;
-//        x = dest_points[i].x;
-//        y =  dest_points[i].y;
         out_points.push_back(Point2f(x,y));
 
     }
 
-
-    // //Read triangle indices
-    // ifstream ifs("/home/spark/Desktop/learnopencv/FaceMorph/tri.txt");
-    // int x,y,z;
-
-    // while(ifs >> x >> y >> z)
-    // {
     if(triVec.size() == 0)
         loadTriangleList();    //empty average image
 
@@ -207,12 +219,8 @@ Mat faceswap::morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTrac
         t.push_back( out_points[z] );
         morphTriangle(img1, img2, imgMorph, t1, t2, t, alpha);
     }
-//    imgMorph.convertTo(imgMorph, CV_8U);
-//    // Display Result
-//    imgMorph.convertTo(imgMorph, CV_32F);
     Mat bgrImgMorph;
     cvtColor( imgMorph,bgrImgMorph, CV_RGB2BGR);
-
     imshow("Morphed Face", bgrImgMorph/255);
     waitKey(0);
     destroyAllWindows();
@@ -306,9 +314,76 @@ std::vector<Point2f> faceswap::readPoints(string pointsFileName)
     while(ifs >> x >> y)
     {
         points.push_back(Point2f(x,y));
+
     }
 
     return points;
+}
+void faceswap::clip(Mat& img, float minval, float maxval)
+{
+    CV_Assert(maxval > minval);
+    uint row = img.rows;
+    uint col = img.cols;
+    for (size_t i = 0; i != row; ++i)
+    {
+        float* temp = img.ptr<float>(i);
+        for (size_t j = 0; j != col; ++j)
+        {
+            if (temp[j] < minval)
+            {
+                temp[j] = minval;
+            }
+            if (temp[j] > maxval)
+            {
+                temp[j] = maxval;
+            }
+        }
+    }
+}
+void faceswap::colorTransfer(const Mat& src, Mat& dst)
+{
+
+    imshow("Display labdst", src);
+    waitKey(0);
+    Mat labsrc, labdst;
+    cvtColor(src, labsrc, COLOR_BGR2Lab);
+    cvtColor(dst, labdst, COLOR_BGR2Lab);
+    labsrc.convertTo(labsrc, CV_32FC3);
+    labdst.convertTo(labdst, CV_32FC3);
+
+
+    //计算三个通道的均值与方差
+    Scalar meansrc, stdsrc, meandst, stddst;
+    meanStdDev(labsrc, meansrc, stdsrc);
+    meanStdDev(labdst, meandst, stddst);
+    //三通道分离
+    std::vector<Mat> srcsplit, dstsplit;
+    split(labsrc, srcsplit);
+    split(labdst, dstsplit);
+    //每个通道减去均值
+    dstsplit[0] -= meandst[0];
+    dstsplit[1] -= meandst[1];
+    dstsplit[2] -= meandst[2];
+    //每个通道缩放
+    dstsplit[0] = stddst[0]/stdsrc[0] * dstsplit[0];
+    dstsplit[1] = stddst[1]/stdsrc[0] * dstsplit[1];
+    dstsplit[2] = stddst[2]/stdsrc[0] * dstsplit[2];
+    //加上源图像的均值
+    dstsplit[0] += meansrc[0];
+    dstsplit[1] += meansrc[1];
+    dstsplit[2] += meansrc[2];
+    //控制溢出
+    //clip(dstsplit[0], 0.0f, 255.0f);
+    //clip(dstsplit[1], 0.0f, 255.0f);
+    //clip(dstsplit[2], 0.0f, 255.0f);
+    //转换为单字节单通道
+    dstsplit[0].convertTo(dstsplit[0], CV_8UC1);
+    dstsplit[1].convertTo(dstsplit[1], CV_8UC1);
+    dstsplit[2].convertTo(dstsplit[2], CV_8UC1);
+    //合并每个通道
+    merge(dstsplit, dst);
+    //从lab空间转换到RGB空间
+    cvtColor(dst, dst, COLOR_Lab2BGR);
 }
 
 faceswap::~faceswap(){

@@ -50,6 +50,8 @@ public:
     Mat convexSwap(Mat src, Mat swapModel);
     Mat morphSwap(ofxFaceTracker2& faceTracker1, ofxFaceTracker2& faceTracker2, Mat src, Mat swapModel);
     void setIminateLandmarks(Mat iminateModel);
+    void clip(Mat& img, float minval, float maxval);
+    void colorTransfer(const Mat& src, Mat& dst);
 
 //    Mat swap(Mat src, Mat swapModel);
     ofxFaceTracker2 faceTracker1;
@@ -59,10 +61,6 @@ public:
     Mat img1;
     Mat img2;
 private:
-    int IMG1_WIDTH_EDGE = 100;
-    int IMG1_HEIGHT_EDGE = 100;
-    int IMG2_WIDTH_EDGE = 400;
-    int IMG2_HEIGHT_EDGE = 100;
     int IMG_WIDTH = 240;
     int IMG_HEIGHT = 320;
     int _count = 0;
@@ -72,10 +70,11 @@ private:
     std::vector<cv::Point2f> EXpoints;
     std::vector<Point2f> readPoints(string pointsFileName);
     std::vector<cv::Point2f> dest_points ;
+    std::vector<cv::Point> points2D;
     void morphTriangle(Mat &img1, Mat &img2, Mat &img, std::vector<Point2f> &t1, std::vector<Point2f> &t2, std::vector<Point2f> &t, double alpha);
     void applyAffineTransform(Mat &warpImage, Mat &src, std::vector<Point2f> &srcTri, std::vector<Point2f> &dstTri);
     void loadTriangleList();
-
+    Mat lastMorph;
 
 
 };
