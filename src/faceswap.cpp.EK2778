@@ -1,0 +1,135 @@
+#include "faceswap.h"
+using namespace std;
+faceswap::faceswap(Mat swapModel){
+//    img1 = src;
+    img2 = swapModel;
+    cv::Size size = swapModel.size();
+
+
+    //alpha controls the degree of morph
+//    double alpha = 0.5;
+
+    //Read input images
+//    std::cout << img1.cols << std::endl;
+//    std::cout << img2.cols << std::endl;
+    //convert Mat to float data type
+//    img1.convertTo(img1, CV_32F);
+//    img2.convertTo(img2, CV_32F);
+
+
+    //empty average image
+//    cv_image<bgr_pixel> c_src(img1);
+//    std::vector<rectangle> face;
+//    face = detector(c_src);
+    faceTracker1.setup();
+    faceTracker2.setup();
+
+    faceTracker2.update(img1);
+
+    std::vector<ofxFaceTracker2Instance> faceTracker2_faces = faceTracker2.getInstances();
+    ofxFaceTracker2Landmarks faceLm_2 = faceTracker2_faces.at(0).getLandmarks();
+    EXpoints = faceLm_2.getCvImagePoints();
+    std::vector<cv::Point> points = (std::vector<cv::Point>)faceLm_2.getCvImagePoints();
+    cv::Rect rect(0, 0, size.width, size.height);
+    cv::Subdiv2D subdiv(rect);
+    subdiv.insert(EXpoints);
+    std::vector<TRIANGLE_DESC> triList;
+    std::vector<cv::Vec6f> temp_result;
+    subdiv.getTriangleList(temp_result);
+    for (const auto _tmp_vec : temp_result)
+    {
+        cv::Point pt1((int)_tmp_vec[0], (int)_tmp_vec[1]);
+        cv::Point pt2((int)_tmp_vec[2], (int)_tmp_vec[3]);
+        cv::Point pt3((int)_tmp_vec[4], (int)_tmp_vec[5]);
+        long p1=99, p2=99, p3=99;
+        for (int i = 0; i < points.size(); i++)
+        {
+            if (pt1 == points.at(i)) {
+                p1 = i;
+            }else if (pt2 == points.at(i)) {
+                p2 = i;
+            }else if (pt3 == points.at(i)) {
+                p3 = i;
+            }
+        }
+        if (p1 == 99 || p2 == 99 || p3 == 99) continue;
+        triList.push_back(TRIANGLE_DESC(p1, p2, p3));
+    }
+
+
+}
+
+
+
+Mat faceswap::swap(Mat src){
+    //Speedup
+    cv::Mat im = img1;
+    cv::Mat im_small, im_display;
+    cv::Mat srcM = cv::Mat::zeros(im.size(), CV_8UC1);
+
+    // Resize image for face detection
+    cv::resize(im, im_small, cv::Size(), 1.0/FACE_DOWNSAMPLE_RATIO, 1.0/FACE_DOWNSAMPLE_RATIO);
+
+    // Change to dlib's image format. No memory is copied.
+    cv_image<bgr_pixel> cimg_small(im_small);
+    cv_image<bgr_pixel> cimg(im);
+
+    faceTracker1.update(img1);
+
+    std::vector<ofxFaceTracker2Instance> faceTracker1_faces = faceTracker1.getInstances();
+    ofxFaceTracker2Landmarks faceLm_1 = faceTracker1_faces.at(0).getLandmarks();
+    std::vector<cv::Point2f> srcPoints = faceLm_1.getCvImagePoints();
+
+    // Turn OpenCV's Mat into something dlib can deal with.  Note that this just
+    // wraps the Mat object, it doesn't copy anything.  So cimg is only valid as
+    // long as temp is valid.  Also don't do anything to temp that would cause it
+    // to reallocate the memory which stores the image as that will make cimg
+    // contain dangling pointers.  This basically means you shouldn't modify temp
+    // while using cimg.
+    //cv_image<bgr_pixel> cimg(temp);
+
+    // Detect faces
+    //std::vector<rectangle> faces = detector(cimg);
+
+//    if ( count % SKIP_FRAMES == 0 )
+//    {
+//        faces = detector(cimg_small);
+//    }
+    // Find the pose of each face.
+//    std::vector<full_object_detection> shapes;
+
+    for (int i = 0; i < triList.size(); i++)
+    {
+        cv::Point2f srcTri[3];
+        srcTri[0] = cv::Point2f(EXpoints.at(triList.at(i).pt1).x, EXpoints.at(triList.at(i).pt1).y);
+        srcTri[1] = cv::Point2f(EXpoints.at(triList.at(i).pt2).x, EXpoints.at(triList.at(i).pt2).y);
+        srcTri[2] = cv::Point2f(EXpoints.at(triList.at(i).pt3).x, EXpoints.at(triList.at(i).pt3).y);
+
+
+
+        cv::Point2f dstTri[3];
+        dstTri[0] = cv::Point2f(srcPoints.at(triList.at(i).pt1).x, srcPoints.at(triList.at(i).pt1).y);
+        dstTri[1] = cv::Point2f(srcPoints.at(triList.at(i).pt2).x, srcPoints.at(triList.at(i).pt2).y);
+        dstTri[2] = cv::Point2f(srcPoints.at(triList.at(i).pt3).x, srcPoints.at(triList.at(i).pt3).y);
+
+        std::vector<cv::Point> points;
+        points.push_back(cv::Point(srcPoints.at(triList.at(i).pt1).x, srcPoints.at(triList.at(i).pt1).y));
+        points.push_back(cv::Point(srcPoints.at(triList.at(i).pt2).x, srcPoints.at(triList.at(i).pt2).y));
+        points.push_back(cv::Point(srcPoints.at(triList.at(i).pt3).x, srcPoints.at(triList.at(i).pt3).y));
+        cv::Mat warp_mat = cv::getAffineTransform(srcTri, dstTri);
+        cv::warpAffine(src, srcM, warp_mat, srcM.size());
+        cv::Rect rect = cv::boundingRect(points);
+        cv::Mat mask = cv::Mat::zeros(im.size(), CV_8U);
+        cv::fillConvexPoly(mask, points, cvScalar(255));
+        srcM.copyTo(im, mask);
+    }
+    return im;
+
+//    shapes.push_back(shape);
+
+//    cv_image<bgr_pixel> cimgs(im);
+//    // Display it all on the screen
+//    win.clear_overlay();
+//    win.set_image(cimgs);
+//    win.add_overlay(render_face_detections(shapes));
+}
